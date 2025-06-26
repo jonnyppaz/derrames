@@ -1,0 +1,62 @@
+
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Geoportal Catastro Rural - Lago Agrio</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <style>
+        body { margin: 0; font-family: Arial, sans-serif; }
+        #map { height: 100vh; width: 100vw; }
+        .header {
+            position: absolute;
+            top: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: white;
+            padding: 8px 16px;
+            z-index: 1000;
+            border-radius: 8px;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">Geoportal de Catastro Rural - Cantón Lago Agrio</div>
+    <div id="map"></div>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+    <!-- Mapa Leaflet -->
+    <script>
+        var map = L.map('map').setView([0.0896, -76.8695], 12);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; OpenStreetMap contributors'
+        }).addTo(map);
+
+        var geojsonURL = 'https://TU-SERVIDOR.com/ruta/catastro_rural_lagoagrio.geojson';
+
+        fetch(geojsonURL)
+            .then(response => response.json())
+            .then(data => {
+                L.geoJSON(data, {
+                    onEachFeature: function (feature, layer) {
+                        let info = `<b>Predio:</b> ${feature.properties.PREDIO || 'N/A'}<br>
+                                    <b>Propietario:</b> ${feature.properties.PROPIETARIO || 'N/A'}<br>
+                                    <b>Área:</b> ${feature.properties.AREA || 'N/A'}`;
+                        layer.bindPopup(info);
+                    },
+                    style: {
+                        color: '#2E8B57',
+                        weight: 1,
+                        fillOpacity: 0.4
+                    }
+                }).addTo(map);
+            });
+    </script>
+</body>
+</html>
